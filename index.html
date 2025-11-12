@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Consultor de Estilo IA — FP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0f14; --card: #121821; --muted: #9fb0c5; --text:#e7edf6; --accent:#66e3c4; --accent-2:#88a7ff;
+    }
+    html,body{height:100%}
+    body{margin:0;background:radial-gradient(1200px 800px at 10% 10%, #0f1724 0, #0b0f14 60%);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;color:var(--text);}
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
+    .hero{display:flex;gap:18px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo .mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent-2));filter:drop-shadow(0 8px 24px rgba(102,227,196,.3));}
+    .headline{font-weight:800;font-size:clamp(24px,3vw,36px)}
+    .sub{color:var(--muted)}
+    .card{background:rgba(18,24,33,.7);border:1px solid rgba(255,255,255,.06);backdrop-filter:blur(8px);padding:18px;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    @media (max-width:920px){.grid{grid-template-columns:1fr;}}
+
+    /* Chat */
+    #chat{height:56vh;min-height:360px;overflow:auto;padding-right:6px;scroll-behavior:smooth}
+    .msg{display:flex;gap:12px;margin:12px 0}
+    .bubble{padding:12px 14px;border-radius:14px;max-width:85%}
+    .user .bubble{background:#1d2735;border:1px solid rgba(255,255,255,.06)}
+    .bot .bubble{background:#0f1a29;border:1px solid rgba(102,227,196,.25)}
+    .msg small{color:var(--muted);display:block;margin-top:6px}
+
+    .inputbar{display:flex;gap:10px;align-items:center;margin-top:10px}
+    textarea{flex:1;min-height:56px;resize:vertical;background:#0b121b;color:var(--text);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px}
+    button{background:linear-gradient(135deg,var(--accent-2),var(--accent));color:#06121a;border:0;padding:12px 16px;font-weight:700;border-radius:12px;cursor:pointer}
+    button[disabled]{opacity:.5;cursor:not-allowed}
+
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+    .kpis .card{padding:12px}
+    .toggle{display:flex;align-items:center;gap:8px;margin-top:8px;color:var(--muted)}
+    input[type="checkbox"]{width:18px;height:18px}
+
+    .tiny{font-size:12px;color:var(--muted)}
+    a{color:var(--accent)}
+    code.inline{background:#0b121b;border:1px solid rgba(255,255,255,.06);padding:2px 6px;border-radius:8px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="hero">
+      <div class="logo"><div class="mark"></div><div>
+        <div class="headline">Consultor de Estilo IA</div>
+        <div class="sub">Funciona 100% no navegador (WebGPU) • Sem servidor • Ideal para GitHub Pages</div>
+      </div></div>
+      <div class="kpis">
+        <div class="card"><b>Gratis</b><br><span class="tiny">Modelos leves em WebLLM</span></div>
+        <div class="card"><b>Privado</b><br><span class="tiny">Tudo roda no seu dispositivo</span></div>
+        <div class="card"><b>Rápido</b><br><span class="tiny">Cache do modelo após 1º uso</span></div>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:16px">
+      <div class="card">
+        <div id="chat" aria-live="polite"></div>
+        <div class="inputbar">
+          <textarea id="userText" placeholder="Ex.: Tenho pele fria, 1,65m, corpo ampulheta; preciso de looks casuais para o verão."></textarea>
+          <button id="sendBtn">Enviar</button>
+        </div>
+        <label class="toggle"><input type="checkbox" id="economyMode" /> Modo econômico (sem IA — recomendações por regras)
+        </label>
+        <div class="tiny" style="margin-top:6px">Dica: a 1ª carga do modelo pode baixar ~80–200MB (apenas uma vez). Se seu dispositivo não tiver WebGPU, ative o <b>Modo econômico</b>.</div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px">Perfil de Estilo Rápido</h3>
+        <div class="tiny">Preencha e cole no chat (opcional)</div>
+        <ul class="tiny">
+          <li>Pele: fria | neutra | quente • Cabelo: loiro | castanho | ruivo | preto • Olhos: claros | escuros</li>
+          <li>Altura/Peso (opcional) • Formato do corpo: retângulo | pêra | triângulo invertido | ampulheta | oval</li>
+          <li>Preferências: minimalista | romântico | street | boho | clássico | sexy | esportivo</li>
+          <li>Ocasião/objetivo: trabalho | entrevista | festa | casamento | viagem | cápsula 10x10</li>
+          <li>Clima/estação: verão | meia-estação | inverno | chuva • Orçamento: baixo | médio | alto</li>
+        </ul>
+        <hr style="border-color:rgba(255,255,255,.06)" />
+        <h3 style="margin:10px 0 8px">Monetização</h3>
+        <ol class="tiny">
+          <li>Adicione links de afiliados nos itens sugeridos.</li>
+          <li>Ofereça <i>pack</i> premium (guia de cores, cápsulas prontas, checklist) como PDF.</li>
+          <li>Capte e-mail com um brinde (ex.: “Guia de 30 looks básicos”).</li>
+        </ol>
+        <hr style="border-color:rgba(255,255,255,.06)" />
+        <h3 style="margin:10px 0 8px">Transparência</h3>
+        <p class="tiny">Este app usa um modelo pequeno de linguagem executado no navegador (WebLLM). Respostas são auxiliares, não substituem consultoria profissional.</p>
+      </div>
+    </div>
+
+    <p class="tiny" style="margin-top:14px">© FP — Feito com ❤ para GitHub Pages. | <span id="modelLabel">Carregando modelo…</span></p>
+  </div>
+
+  <!-- WebLLM: runtime em navegador (via CDN ESM). -->
+  <script type="module">
+    import { CreateWebWorkerMLCEngine, getModel, prebuiltAppConfig } from "https://esm.run/@mlc-ai/web-llm";
+
+    // ======== Configuração do modelo (leve e gratuito) ========
+    const MODEL_ID = "Llama-3.2-1B-instruct-q4f16_1-MLC"; // leve (~1B) — bom para sugestões curtas
+    // Veja lista de modelos suportados: https://github.com/mlc-ai/web-llm
+
+    // ======== UI helpers ========
+    const chat = document.getElementById('chat');
+    const userText = document.getElementById('userText');
+    const sendBtn = document.getElementById('sendBtn');
+    const economy = document.getElementById('economyMode');
+    const modelLabel = document.getElementById('modelLabel');
+
+    function el(tag, cls, html){ const e = document.createElement(tag); if(cls) e.className = cls; if(html) e.innerHTML = html; return e; }
+    function addMsg(role, html){
+      const row = el('div', 'msg ' + role);
+      const avatar = el('div');
+      avatar.style.width = '32px'; avatar.style.height = '32px'; avatar.style.borderRadius = '10px';
+      avatar.style.background = role==='bot' ? 'linear-gradient(135deg, var(--accent), var(--accent-2))' : '#2a3446';
+      const bubble = el('div','bubble'); bubble.innerHTML = html;
+      row.appendChild(avatar); row.appendChild(bubble); chat.appendChild(row); chat.scrollTop = chat.scrollHeight;
+    }
+
+    // ======== Base de conhecimento por regras (fallback e modo econômico) ========
+    const DB = {
+      colorSeasons: {
+        fria: ["marinho","preto frio","cinza ardósia","gelo rosado","beringela","esmeralda"],
+        neutra: ["caramelo neutro","azul petróleo","musgo","areia","off-white","framboesa"],
+        quente: ["terracota","dourado","oliva","pêssego","marrom chocolate","turquesa quente"]
+      },
+      bodyTips: {
+        retangulo: "Crie curvas com cintos, peplum leve e peças com recortes na cintura.",
+        pera: "Equilibre com ombreiras suaves, decote aberto e calças retas/flare.",
+        "triângulo invertido": "Suavize ombros com decotes em V e volume na parte de baixo (saias A).",
+        ampulheta: "Valorize a cintura com cintos, wrap dress e peças ajustadas sem apertar.",
+        oval: "Crie linhas verticais (blazers abertos), tecidos fluidos e cintura levemente marcada."
+      },
+      capsules: {
+        verao: [
+          "Camisa branca leve","Regata canelada","Saia midi fluida","Short de alfaiataria",
+          "Calça reta de linho","Vestido wrap midi","Tênis branco","Sandália minimalista",
+          "Bolsa tiracolo neutra","Óculos clássico"
+        ],
+        inverno: [
+          "Tricot gola alta","Blazer estruturado","Casaco de lã médio","Calça jeans reta",
+          "Calça de alfaiataria","Bota cano médio","Tênis couro","Cachecol lã",
+          "Bolsa tote","Cinto couro"
+        ]
+      }
+    };
+
+    function ruleBasedSuggest(profile){
+      // Heurística simples a partir do texto do usuário
+      const t = profile.toLowerCase();
+      const season = t.includes('fria') ? 'fria' : t.includes('quente') ? 'quente' : 'neutra';
+      const shape = Object.keys(DB.bodyTips).find(k => t.includes(k)) || 'retangulo';
+      const clima = t.includes('inverno') ? 'inverno' : 'verao';
+      const cores = DB.colorSeasons[season].slice(0,5).join(', ');
+      const tipShape = DB.bodyTips[shape];
+      const caps = DB.capsules[clima].slice(0,8).map(i=>`• ${i}`).join('<br>');
+      return `
+        <b>Resumo do seu perfil</b><br>
+        Paleta sugerida: <i>${cores}</i><br>
+        Dica morfológica: ${tipShape}<br><br>
+        <b>Cápsula ${clima === 'verao' ? 'de verão' : 'de inverno'} (8/10 itens)</b><br>${caps}<br><br>
+        <b>Combinações rápidas</b><br>
+        • Look 1: camisa branca + short alfaiataria + sandália minimalista.<br>
+        • Look 2: vestido wrap + bolsa tiracolo + óculos clássico.<br>
+        • Look 3: blazer estruturado + calça reta + tênis branco.<br><br>
+        <b>Próximo passo</b>: me diga uma ocasião (ex.: entrevista, casamento, viagem) e seu orçamento para eu ajustar as sugestões.
+      `;
+    }
+
+    // ======== Persona do consultor (usada pelo LLM) ========
+    const SYSTEM_PROMPT = `Você é um consultor de estilo experiente. 
+Fale em português do Brasil, com tom acolhedor e prático. 
+Formato da resposta:
+1) Paleta e tecidos ideais (com justificativa de subtom, contraste, estação/clima)
+2) Silhueta e modelagens (baseado em formato do corpo citado)
+3) 3 a 5 looks prontos para a ocasião do usuário (peças + calçados + acessórios)
+4) Mini cápsula (10 itens máximos) e como combinar em 7 dias
+5) Sugestões de compra genéricas (sem citar marcas) e como adaptar ao orçamento
+6) Checklist final (bullets)
+Regras: conciso, sem linguagem absoluta, priorize conforto e autoestima, ofereça alternativas inclusivas (plus size, modéstia, necessidades sensoriais).`;
+
+    // ======== Estado do chat (para o LLM) ========
+    const dialog = [
+      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'user', content: 'Você é meu consultor de estilo pessoal. Meu perfil inicial: pele neutra, 1,65m, corpo ampulheta, gosto de minimalismo romântico. Quero montar cápsula para meia-estação com orçamento baixo.' }
+    ];
+
+    // ======== Inicialização do modelo (WebLLM) ========
+    let engine = null;
+    let loading = false;
+
+    async function initModel(){
+      try{
+        loading = true; modelLabel.textContent = `Baixando modelo: ${MODEL_ID}…`;
+        engine = await CreateWebWorkerMLCEngine(MODEL_ID, {
+          initProgressCallback: (p)=>{ modelLabel.textContent = p.text; }
+        });
+        modelLabel.textContent = `Modelo carregado: ${MODEL_ID}`;
+      } catch(err){
+        console.error(err);
+        modelLabel.textContent = 'Falha ao carregar modelo. Ative o Modo econômico.';
+      } finally { loading = false; }
+    }
+
+    // Dispara o carregamento sem bloquear a UI
+    initModel();
+
+    // Mensagem de boas-vindas
+    addMsg('bot', '<b>Bem-vinda!</b> Eu sou seu consultor de estilo IA. Descreva seu perfil (pele, altura, formato do corpo, preferências, ocasião e clima). Posso sugerir paleta, modelagens e looks.');
+
+    async function generateLLMReply(userMsg){
+      if(!engine){ return 'Modelo indisponível — use o <b>Modo econômico</b> por enquanto.'; }
+      const turns = dialog.concat({role:'user', content: userMsg});
+      // Geração simples (stream desativado para facilitar)
+      const out = await engine.chat.completions.create({
+        messages: turns,
+        temperature: 0.6,
+        max_tokens: 512,
+      });
+      const text = out.choices?.[0]?.message?.content || 'Sem resposta.';
+      // Atualiza histórico somente após obter saída
+      dialog.push({role:'user', content:userMsg});
+      dialog.push({role:'assistant', content:text});
+      return text.replaceAll('\n', '<br>');
+    }
+
+    async function onSend(){
+      const msg = userText.value.trim(); if(!msg) return;
+      addMsg('user', msg); userText.value = '';
+
+      // Economia: motor por regras
+      if(economy.checked || !engine){
+        const html = ruleBasedSuggest(msg);
+        addMsg('bot', html);
+        return;
+      }
+
+      sendBtn.disabled = true; sendBtn.textContent = 'Gerando…';
+      try{
+        const html = await generateLLMReply(msg);
+        addMsg('bot', html);
+      } catch(e){
+        console.error(e);
+        addMsg('bot','Ocorreu um erro na IA. Ative o <b>Modo econômico</b> para seguir.');
+      } finally {
+        sendBtn.disabled = false; sendBtn.textContent = 'Enviar';
+      }
+    }
+
+    sendBtn.addEventListener('click', onSend);
+    userText.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && (e.metaKey||e.ctrlKey)) onSend(); });
+  </script>
+</body>
+</html>
